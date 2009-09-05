@@ -48,6 +48,7 @@ class VWidget;
 class Connexion;
 class VDownload;
 class FenOptions;
+class FichierAEnvoyer;
 
 class FenPrincipale : public QMainWindow
 {

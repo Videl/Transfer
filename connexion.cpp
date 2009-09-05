@@ -18,6 +18,9 @@ Connexion::Connexion(FenPrincipale *fenPr, FenOptions* opt) : fenetre(fenPr), op
 
     tailleMessage = 0;
     tailleMorceauxFichiers = 262144; // 256 KiB
+    //timerDL = new QTime;
+    /*timerDL->start();
+    lastTime = timerDL->elapsed();*/
 }
 
 void Connexion::setFenConnexion(FenConnexion* fenCo) {
@@ -117,7 +120,7 @@ void Connexion::envoyerFichier(QString fileUrl, QString nom, QString demandeur) 
     theFile->close();
     delete theFile;
     theFile = NULL;*/
-    fichiersAEnvoyer << new FichierAEnvoyer(fileUrl, nom, demandeur);
+    fichiersAEnvoyer << new FichierAEnvoyer(fenetre, fileUrl, nom, demandeur);
     this->envoyerMorceau();
 }
 
@@ -127,7 +130,7 @@ void Connexion::envoyerMorceau() {
             // Si le fichier est terminé, on le retire de la file
             fichiersAEnvoyer.head()->~FichierAEnvoyer();
             fichiersAEnvoyer.dequeue();
-        }
+        } else return;
     }
 }
 
@@ -177,9 +180,7 @@ void Connexion::connecte() {
 void Connexion::doneesRecues() {
     QDataStream in(socket);
     //qDebug() << "Recu";
-    int tour = 0;
-    do{
-        tour++;
+    //do{
         if (taille == 0){
             if (socket->bytesAvailable() < (int)sizeof(quint32))
                  return;
@@ -201,113 +202,10 @@ void Connexion::doneesRecues() {
 
         taille = 0;
         //qDebug() << "[Connexion]donneesRecues()] reçu type "<< typeMessage;
-        qDebug() << "Tour" << tour<< "!";
-    }while(socket->bytesAvailable());
-
-/*
-    // On traite le type de message
-    if(style == DT_Chat) {
-        QVariant test;
-        in >> messageRecu >> test;
-        fenetre->addStringlisteMessages(messageRecu);
-       // qDebug() << "[Connexion] reçu message : " << messageRecu;
-    }
-    else if(style == DT_Pseudo) {
-        in >> messageRecu;
-        fenetre->actualisationListePseudos(messageRecu);
-        //qDebug() << "[Connexion] reçu pseudo : "<< messageRecu;
-    }
-    else if(style == DT_IsWriting) {
-        in >> messageRecu;
-        qDebug() << "[Connexion]"<< messageRecu <<" écrit ou arrête";
-        //fenetre->actualisationTyping(messageRecu, style);
-        // On ne fait rien, l'actualisation des pseudos est une liste des pseudos envoyé par le serveur = moins de problèmes
-
-    } else if(style == DT_StoppedWriting) {
-        //fenetre->actualisationTyping(messageRecu, style);
-        // On ne fait rien, l'actualisation des pseudos est une liste des pseudos envoyé par le serveur = moins de problèmes
-
-    }
-    else if(style == DT_InfoFileResult) {
-        in >> messageRecu;
-        //qDebug() << "[Connexion] on reçoit les infos d'un fichier";
-        QString reponse;
-        in  >> reponse;
-        fenetre->updateWhereNameIs(messageRecu, "", "", reponse);
-        fenetre->setMessage(messageRecu+" : " + reponse, 10000);
-    } else if(style == DT_InfoFile) {
-        in >> messageRecu;
-        //qDebug() << "[Connexion] quelqu'un a envoyé un fichier";
-        //fenetre->nouveauFichierAjouteReseau(messageRecu);
-        QString un, de, tr, qu;
-        in >> un >> de >> tr;
-        in >> qu;
-        //qDebug() << "[Connexion] " << "messageRecu->" << messageRecu << "un->"<< un << ";" << "de->"<< de << ";" << "tr->"<< tr << ";" << "qu->"<< qu;
-        // il faut une extraction en plus sinon il y a un décalage dans les paquets
-        fenetre->nouveauFichierAjouteReseau(messageRecu, un, de, tr);
-    } else if (style == DT_AskingForFile) {
-        in >> messageRecu;
-        //messageRecu = celui qui veux le fichier
-        QString fileName;
-        in >> fileName;
-        qDebug() << "[Connexion][AskingForFile]" << messageRecu << " vous demande le fichier "<< fileName;
-
-        fenetre->prepEnvoiFichier(fileName, messageRecu);
-    } else if(style == DT_FileData) {
-        quint64 nombreDuPaquet = 0, nombreDePaquets;
-        QString nomFichier;
-        QByteArray lesBytes;
-        in >> nombreDuPaquet >> nombreDePaquets >> nomFichier >> lesBytes;
-        qDebug() << "[Connexion]Reception de morceau]Recu morceau " << nombreDuPaquet << " sur " << nombreDePaquets << " taille: "<< lesBytes.size();
-
-        if(nombreDuPaquet == 1) {
-            //qDebug() << "[Connexion]Reception de fichier]Création du fichier : "<< nomFichier;
-            //qDebug() << "[Connexion]Reception de fichier]Le fichier est composé de "<<nombreDePaquets;
-
-            listeDL << new VDownload(fenetre, nomFichier, nombreDePaquets, options);
-        }
-
-        int liste = 0;
-        for(int i = 0; i < listeDL.size(); i++)
-            if(nomFichier == listeDL[i]->getNomFichier())
-                liste = i;
-
-        //if(!listeDL[liste]->getFile()) return;
-        //qDebug() << "[Connexion] Emplacement et nom du fichier : ["<<liste<<"] "<< listeDL[liste];
-
-        //qDebug() << "[Connexion]Réception de morceaux]Morceaux numéros"<< nombreDuPaquet <<"sur"<< nombreDePaquets<<".";
-
-        //fichier->write(lesBytes);
-        listeDL[liste]->addBytes(lesBytes);
-
-        if(nombreDuPaquet >= nombreDePaquets) { // Fichier enregistré
-            listeDL[liste]->terminate();
-            //fichier->close();
-            //delete fichier;
-
-            qDebug() << "[Connexion]Réception de fichier]Fichier enregistré";
-        }
-
-    } else { //fenetre->addStringlisteMessages(messageRecu);
-        //qDebug() << "[Connexion]Connais pas le type de message : "<< style;
-        in.skipRawData(this->tailleMessage - sizeof(this->tailleMessage));
-    }*/
-
-    // On remet la taille du message à 0 pour pouvoir recevoir de futurs messages
-
     //}while(socket->bytesAvailable());
-    this->envoyerMorceau();
 
-    /*if(style != DT_FileData) {
-        if(!in.atEnd()) {
-            qDebug() << "[CLI] IN non vide ( style ="<< style<<")";
-            while(!in.atEnd()) {
-                QVariant test;
-                in >> test;
-                qDebug() << "[CLI] Resultat de IN :" << test.toString();
-            }
-        }
-    }*/
+
+    //this->envoyerMorceau();
 
 }
 
