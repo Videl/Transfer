@@ -7,7 +7,7 @@
 
 VDownload::VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions *opt) : QDialog(parent), options(opt) {
     this->setModal(false);
-    this->setWindowTitle(nom);
+    this->setWindowTitle("Téléchargement");
     QGridLayout *layout = new QGridLayout(this);
     nomDuFichier = nom;
 
@@ -15,6 +15,8 @@ VDownload::VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions *opt
     if(options->getSaveAsking() == Qt::Unchecked)
         dossier = options->getSaveFolder();
     else dossier = QFileDialog::getExistingDirectory(this, "Choisissez votre dossier de téléchargement");
+
+
 
     urlStockage = dossier + nom;
 
@@ -30,7 +32,7 @@ VDownload::VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions *opt
     timerDL = new QTime;
     timerDL->start();
     lastTime = timerDL->elapsed();
-	
+
 
     lab_vitesse->setText("Vitesse de téléchargement : "+num_vitesse->toString()+" Kio/s");
     this->tailleFichierEu = new QVariant(0);

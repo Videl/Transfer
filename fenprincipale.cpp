@@ -4,6 +4,7 @@
 #include "connexion.h"
 #include "vdownload.h"
 #include "fenoptions.h"
+#include "fichieraenvoyer.h"
 
 FenPrincipale::FenPrincipale(QWidget *parent) : QMainWindow(parent) {
     zoneCentrale = new VWidget();
@@ -76,6 +77,7 @@ FenPrincipale::FenPrincipale(QWidget *parent) : QMainWindow(parent) {
     zoneCentrale->setLayout(layout);
     setCentralWidget(zoneCentrale);
 
+    //FichierAEnvoyer *file = new FichierAEnvoyer(this, "/home/videl/git/Transfer/README", "README", "Del");
 
     connect(ch_message, SIGNAL(returnPressed()), this, SLOT(prepMessage()));
     connect(ch_message, SIGNAL(textChanged(QString)), this, SLOT(ecriture()));
