@@ -26,7 +26,7 @@ class FenOptions;
 
 class VDownload : public QDialog {
 public:
-    VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions* opt);
+    VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions* opt, bool downloading = true);
 
     QString getNomFichier();
     void addBytes(QByteArray bytes);
