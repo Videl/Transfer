@@ -12,7 +12,7 @@ FichierAEnvoyer::FichierAEnvoyer(QWidget* parent, QString url, QString nom, QStr
     this->nom = nom;
     this->demandeur = demandeur;
     tailleMorceauxFichiers = 262144; // 256 KiB
-    QLabel *lab_vitesse = new QLabel("[Vitesse]");
+    QLabel *lab_vitesse = new QLabel("[Vitesse inconnu]");
 
     fichier = new QFile(url);
     if(!fichier->open(QIODevice::ReadOnly)) {
@@ -87,8 +87,8 @@ bool FichierAEnvoyer::envoyerMorceau(QTcpSocket *socket) {
         this->nombreDuPaquet++;
 
         progression->setValue(bytesRestantsAEnvoyer);
-    if(this->nombreDuPaquet > this->nombreDePaquets)
-        return false;
-    else return true;
-    } else return true;
+        if(this->nombreDuPaquet > this->nombreDePaquets)
+            return false;
+        else return true;
+    } else if(this->nombreDuPaquet > this->nombreDePaquets) return false; else return true;
 }
