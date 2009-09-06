@@ -17,10 +17,11 @@ Connexion::Connexion(FenPrincipale *fenPr, FenOptions* opt) : fenetre(fenPr), op
     connect(socket, SIGNAL(bytesWritten(qint64)), this, SLOT(envoyerMorceau()));
 
     tailleMessage = 0;
-    tailleMorceauxFichiers = 262144; // 256 KiB
+    tailleMorceauxFichiers = 262144; // 256 KiB = 262144 ; 1 Kib = 1024
     //timerDL = new QTime;
     /*timerDL->start();
     lastTime = timerDL->elapsed();*/
+    tour = 0;
 }
 
 void Connexion::setFenConnexion(FenConnexion* fenCo) {
@@ -178,23 +179,39 @@ void Connexion::connecte() {
 
 
 void Connexion::doneesRecues() {
+    qDebug() << "RECEPTION : " << tour;
+    tour++;
     QDataStream in(socket);
     //qDebug() << "Recu";
     //do{
         if (taille == 0){
+            //if (socket->bytesAvailable() < (int)sizeof(quint32))
             if (socket->bytesAvailable() < (int)sizeof(quint32))
                  return;
-            in >> taille;
+            quint32 p_taille;
+            in >> p_taille;
+            taille = (int)p_taille;
+        }
+        
+        if(taille > 10000000) {
+            qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
+            taille = this->taille = 262338;
         }
 
-        if (socket->bytesAvailable() < taille)
+
+        if (socket->bytesAvailable() < taille) {
+
+            qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
             return;
+        }
+
+        qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->bytesAvailable();
 
         // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
         quint32 typeMessage;
         in >> typeMessage;
 
-        qDebug() << "Connexion]Taille:" << taille;
+        //qDebug() << "Connexion]Taille:" << taille;
         QByteArray contenuMessage = socket->read(in.device()->size());
 
 
@@ -206,7 +223,7 @@ void Connexion::doneesRecues() {
 
 
     //this->envoyerMorceau();
-
+        //in.skipRawData(socket->bytesAvailable());
 }
 
 void Connexion::traiterMessage(quint32 type, QByteArray contenu) {
@@ -294,9 +311,12 @@ void Connexion::traiterMessage(quint32 type, QByteArray contenu) {
             }
 
             int liste = 0;
-            for(int i = 0; i < listeDL.size(); i++)
-                if(nomFichier == fenetre->getListeTelechargement()[i]->getNomFichier())
+            for(int i = 0; i < listeDL.size(); i++) {
+                if(nomFichier == fenetre->getListeTelechargement()[i]->getNomFichier()) {
                     liste = i;
+                    break;
+                }
+            }
 
             //if(!listeDL[liste]->getFile()) return;
             //qDebug() << "[Connexion] Emplacement et nom du fichier : ["<<liste<<"] "<< listeDL[liste];
