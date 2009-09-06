@@ -191,22 +191,22 @@ void Connexion::donneesRecues() {
             quint32 p_taille;
             in >> p_taille;
             taille = (int)p_taille;
-            qDebug() << "Lecture de la taille ..............................." << taille;
+            //qDebug() << "Lecture de la taille ..............................." << taille;
         }
         
         if(taille > 10000000) {
-            qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
-            taille = this->taille = 262338;
+            //qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
+            taille = this->taille = 262338-4;
         }
-
 
         if (socket->bytesAvailable() < taille) {
 
-            qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
+            //qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
             return;
         }
 
-        qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->bytesAvailable();
+        //qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->size();
+        qDebug() << in.device()->size();
 
         // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
         quint32 typeMessage;
@@ -302,7 +302,7 @@ void Connexion::traiterMessage(quint32 type, QByteArray contenu) {
             QString nomFichier;
             QByteArray lesBytes;
             in >> nombreDuPaquet >> nombreDePaquets >> nomFichier >> lesBytes;
-            qDebug() << "[Connexion]Reception de morceau]Recu morceau " << nombreDuPaquet << " sur " << nombreDePaquets << " taille: "<< lesBytes.size();
+            //qDebug() << "[Connexion]Reception de morceau]Recu morceau " << nombreDuPaquet << " sur " << nombreDePaquets << " taille: "<< lesBytes.size();
 
             if(nombreDuPaquet == 1) {
                 /*qDebug() << "[Connexion]Reception de fichier]Création du fichier : "<< nomFichier;
