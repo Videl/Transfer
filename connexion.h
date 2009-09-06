@@ -33,7 +33,7 @@ private slots:
     void connecte();
     void deconnecte();
     void erreurSocket(QAbstractSocket::SocketError erreur);
-    void doneesRecues();
+    void donneesRecues();
     void envoyerMorceau();
 
 private:
