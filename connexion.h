@@ -45,10 +45,12 @@ private:
 
     int tailleMessage;
     int tailleMorceauxFichiers;
-    quint32 taille;
+    unsigned int taille;
 
     QList<VDownload * > listeDL;
     QQueue<FichierAEnvoyer *> fichiersAEnvoyer;
+
+    int tour;
 
 };
 
