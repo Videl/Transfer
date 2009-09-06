@@ -13,7 +13,7 @@ Connexion::Connexion(FenPrincipale *fenPr, FenOptions* opt) : fenetre(fenPr), op
     connect(socket, SIGNAL(disconnected()), this, SLOT(deconnecte()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(erreurSocket(QAbstractSocket::SocketError)));
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(doneesRecues()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(donneesRecues()));
     connect(socket, SIGNAL(bytesWritten(qint64)), this, SLOT(envoyerMorceau()));
 
     tailleMessage = 0;
@@ -178,8 +178,8 @@ void Connexion::connecte() {
 }
 
 
-void Connexion::doneesRecues() {
-    qDebug() << "RECEPTION : " << tour;
+void Connexion::donneesRecues() {
+    //qDebug() << "RECEPTION : " << tour;
     tour++;
     QDataStream in(socket);
     //qDebug() << "Recu";
@@ -191,6 +191,7 @@ void Connexion::doneesRecues() {
             quint32 p_taille;
             in >> p_taille;
             taille = (int)p_taille;
+            qDebug() << "Lecture de la taille ..............................." << taille;
         }
         
         if(taille > 10000000) {
