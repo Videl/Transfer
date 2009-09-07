@@ -183,7 +183,7 @@ void Connexion::donneesRecues() {
     tour++;
     QDataStream in(socket);
     //qDebug() << "Recu";
-    //do{
+    do{
         if (taille == 0){
             //if (socket->bytesAvailable() < (int)sizeof(quint32))
             if (socket->bytesAvailable() < (int)sizeof(quint32))
@@ -206,21 +206,23 @@ void Connexion::donneesRecues() {
         }
 
         //qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->size();
-        qDebug() << in.device()->size();
+        //qDebug() << in.device()->size();
 
         // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
         quint32 typeMessage;
         in >> typeMessage;
 
         //qDebug() << "Connexion]Taille:" << taille;
-        QByteArray contenuMessage = socket->read(in.device()->size());
+        //QByteArray contenuMessage = socket->read(in.device()->size());
+        quint64 size =  (quint64)taille;// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
+        QByteArray contenuMessage = socket->read(size);
 
 
         traiterMessage(typeMessage, contenuMessage);
 
         taille = 0;
         //qDebug() << "[Connexion]donneesRecues()] reçu type "<< typeMessage;
-    //}while(socket->bytesAvailable());
+    }while(socket->bytesAvailable());
 
 
     //this->envoyerMorceau();
