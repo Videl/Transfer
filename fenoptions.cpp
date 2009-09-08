@@ -109,6 +109,7 @@ void FenOptions::iniTab() {
 void FenOptions::choisirDossierSav() {
     QString dossier = QFileDialog::getExistingDirectory(this, "Choisissez votre dossier de téléchargement");
     if(dossier.data()[dossier.size()-1] != QVariant(PATHSEPARATOR).toChar()) dossier = dossier + QVariant(PATHSEPARATOR).toString();
+
     //dossier = "\""+ dossier + "\"";
     urlFolder->setText(dossier);
 }
