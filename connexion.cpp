@@ -183,27 +183,31 @@ void Connexion::donneesRecues() {
     tour++;
     QDataStream in(socket);
     //qDebug() << "Recu";
-    do{
+    //do{
         if (taille == 0){
             //if (socket->bytesAvailable() < (int)sizeof(quint32))
             if (socket->bytesAvailable() < (int)sizeof(quint32))
                  return;
+
             quint32 p_taille;
             in >> p_taille;
-            taille = (int)p_taille;
-            //qDebug() << "Lecture de la taille ..............................." << taille;
+            taille = p_taille;
+            qDebug() << "Lecture de la taille ..............................." << p_taille;
         }
         
-        if(taille > 10000000) {
+        /*if(taille > 10000000) {
             //qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
             taille = this->taille = 262338-4;
-        }
+        }*/
+        qDebug() << "Gero gero";
+        if(taille > 1000000) { qDebug() << "RE:" << taille; }
 
         if (socket->bytesAvailable() < taille) {
 
-            //qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
+            qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
             return;
         }
+        //qDebug() << "Bwahahah";
 
         //qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->size();
         //qDebug() << in.device()->size();
@@ -214,7 +218,7 @@ void Connexion::donneesRecues() {
 
         //qDebug() << "Connexion]Taille:" << taille;
         //QByteArray contenuMessage = socket->read(in.device()->size());
-        quint64 size =  (quint64)taille;// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
+        quint64 size =  quint64(taille - sizeof(typeMessage));// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
         QByteArray contenuMessage = socket->read(size);
 
 
@@ -222,7 +226,7 @@ void Connexion::donneesRecues() {
 
         taille = 0;
         //qDebug() << "[Connexion]donneesRecues()] reçu type "<< typeMessage;
-    }while(socket->bytesAvailable());
+    //}while(socket->bytesAvailable());
 
 
     //this->envoyerMorceau();
