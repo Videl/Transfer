@@ -199,7 +199,7 @@ void Connexion::donneesRecues() {
             //qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
             taille = this->taille = 262338-4;
         }*/
-        qDebug() << "Gero gero";
+        //qDebug() << "Gero gero";
         if(taille > 1000000) { qDebug() << "RE:" << taille; }
 
         if (socket->bytesAvailable() < taille) {
@@ -219,7 +219,7 @@ void Connexion::donneesRecues() {
         //qDebug() << "Connexion]Taille:" << taille;
         //QByteArray contenuMessage = socket->read(in.device()->size());
         quint64 size =  quint64(taille - sizeof(typeMessage));// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
-        QByteArray contenuMessage = socket->read(size);
+        QByteArray contenuMessage = socket->read(taille - 4);
 
 
         traiterMessage(typeMessage, contenuMessage);
