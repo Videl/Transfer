@@ -11,14 +11,17 @@ FichierAEnvoyer::FichierAEnvoyer(QWidget* parent, QString url, QString nom, QStr
     this->url = url;
     this->nom = nom;
     this->demandeur = demandeur;
-    tailleMorceauxFichiers = 262144; // 256 KiB
+    tailleMorceauxFichiers =(1024*64); // 262144; // 256 KiB
     QLabel *lab_vitesse = new QLabel("[Vitesse inconnu]");
 
     fichier = new QFile(url);
+
+    qDebug() << "FichierAEnvoyer] Debut ouverture";
     if(!fichier->open(QIODevice::ReadOnly)) {
         qDebug() << "FichierAEnvoyer.cpp]Erreur d'ouverture du fichier : " << url;
         return;
     }
+    qDebug() << "FichierAEnvoyer] Fin ouverture";
 
     this->tailleDuFichier = fichier->size();
     this->nombreDePaquets = (tailleDuFichier + tailleMorceauxFichiers -1 ) / tailleMorceauxFichiers;
@@ -80,7 +83,9 @@ bool FichierAEnvoyer::envoyerMorceau(QTcpSocket *socket) {
         out.device()->seek(0);
 
         out << (quint32) (paquet.size() - sizeof(quint32));
+        qDebug() << "FichierAEnvoyer] Debut envoi paquet";
         socket->write(paquet);
+        qDebug() << "FichierAEnvoyer] Fin envoi paquet";
         this->bytesRestantsAEnvoyer -= morceaux.size();
 
         qDebug() << "[FichierAEnvoyer]Envoi du morceau "<< nombreDuPaquet << " sur "<< nombreDePaquets << "; taille :" << morceaux.size();

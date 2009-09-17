@@ -20,7 +20,7 @@ VDownload::VDownload(QWidget* parent, QString nom, int nbPaquet, FenOptions *opt
 
     urlStockage = dossier + nom;
 
-    tailleMorceauxFichiers = 262144; // 256 KiB
+    tailleMorceauxFichiers = (1024*64); // 256 KiB
     fichier = new QFile(urlStockage);
     if(!fichier->open(QIODevice::WriteOnly))
         qDebug() << "[VDownload]Création du fichier]Erreur lors de la création du fichier " << urlStockage;

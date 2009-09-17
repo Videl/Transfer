@@ -17,7 +17,7 @@ Connexion::Connexion(FenPrincipale *fenPr, FenOptions* opt) : fenetre(fenPr), op
     connect(socket, SIGNAL(bytesWritten(qint64)), this, SLOT(envoyerMorceau()));
 
     tailleMessage = 0;
-    tailleMorceauxFichiers = 262144; // 256 KiB = 262144 ; 1 Kib = 1024
+    tailleMorceauxFichiers = (1024*64); // 256 KiB = 262144 ; 1 Kib = 1024
     //timerDL = new QTime;
     /*timerDL->start();
     lastTime = timerDL->elapsed();*/
@@ -219,7 +219,9 @@ void Connexion::donneesRecues() {
         //qDebug() << "Connexion]Taille:" << taille;
         //QByteArray contenuMessage = socket->read(in.device()->size());
         quint64 size =  quint64(taille - sizeof(typeMessage));// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
-        QByteArray contenuMessage = socket->read(taille - 4);
+        quint64 _taille = in.device()->size();
+        qDebug() << "CONNEXION] _taille = " << _taille << " et size :" << size;
+        QByteArray contenuMessage = socket->read(_taille);
 
 
         traiterMessage(typeMessage, contenuMessage);
