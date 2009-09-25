@@ -175,6 +175,7 @@ void Connexion::connecte() {
     fenetreConnexion->switchState_serv_ip(true);
     fenetreConnexion->switchState_serv_port(true);
     fenetre->setStatusLabel("Connecté");
+    taille = (quint32) 0;
 }
 
 
@@ -191,7 +192,7 @@ void Connexion::donneesRecues() {
 
             quint32 p_taille;
             in >> p_taille;
-            taille = p_taille;
+            taille = (quint32) p_taille;
             qDebug() << "Lecture de la taille ..............................." << p_taille;
         }
         
@@ -226,7 +227,8 @@ void Connexion::donneesRecues() {
 
         traiterMessage(typeMessage, contenuMessage);
 
-        taille = 0;
+        if(taille != (quint32)0)
+            taille = (quint32)0;
         //qDebug() << "[Connexion]donneesRecues()] reçu type "<< typeMessage;
     //}while(socket->bytesAvailable());
 
