@@ -22,7 +22,8 @@ Connexion::Connexion(FenPrincipale *fenPr, FenOptions* opt) : fenetre(fenPr), op
     /*timerDL->start();
     lastTime = timerDL->elapsed();*/
     tour = 0;
-}
+    TAILLE_MAX = 256*1024;
+ }
 
 void Connexion::setFenConnexion(FenConnexion* fenCo) {
     fenetreConnexion = fenCo;
@@ -185,44 +186,53 @@ void Connexion::donneesRecues() {
     QDataStream in(socket);
     //qDebug() << "Recu";
     //do{
-        if (taille == 0){
+    forever{
+        if (taille == (quint32)0)
+        {
             //if (socket->bytesAvailable() < (int)sizeof(quint32))
             if (socket->bytesAvailable() < (int)sizeof(quint32))
                  return;
 
-            quint32 p_taille;
-            in >> p_taille;
-            taille = (quint32) p_taille;
-            qDebug() << "Lecture de la taille ..............................." << p_taille;
+            in >> taille;
+            //qDebug() << "Lecture de la taille ..............................." << p_taille;
+            if (taille > TAILLE_MAX )
+            {
+                //qCritical() << tr("Taille de message incorrecte %1 > TAILLE_MAX(%2). Déconnexion.").arg(taille).arg(TAILLE_MAX);
+                qDebug() << tr("Taille de message incorrecte %1 > TAILLE_MAX(%2). Déconnexion.").arg(taille).arg(TAILLE_MAX);
+                // L'erreur est irrécupérable donc on déconnecte
+                //socket->disconnectFromHost();
+            }
         }
         
         /*if(taille > 10000000) {
             //qDebug() << "TAILLE REMISE A ZERO .............." << "("<<taille<<")";
             taille = this->taille = 262338-4;
         }*/
-        //qDebug() << "Gero gero";
-        if(taille > 1000000) { qDebug() << "RE:" << taille; }
+        //if(taille > 1000000) { qDebug() << "RE:" << taille; }
 
         if (socket->bytesAvailable() < taille) {
 
             qDebug() << "Taille refusée :" << socket->bytesAvailable() << " < " << taille;
             return;
         }
-        //qDebug() << "Bwahahah";
 
         //qDebug() << "RECEPTION++++ !" << tour -1 << "; taille:"<< socket->size();
         //qDebug() << in.device()->size();
 
         // Si on arrive jusqu'à cette ligne, on peut récupérer le message entier
-        quint32 typeMessage;
-        in >> typeMessage;
+        //quint32 typeMessage;
+        //in >> typeMessage;
 
         //qDebug() << "Connexion]Taille:" << taille;
         //QByteArray contenuMessage = socket->read(in.device()->size());
-        quint64 size =  quint64(taille - sizeof(typeMessage));// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
-        quint64 _taille = in.device()->size();
-        qDebug() << "CONNEXION] _taille = " << _taille << " et size :" << size;
-        QByteArray contenuMessage = socket->read(_taille);
+        //quint64 size =  quint64(taille - sizeof(typeMessage));// - sizeof(quint32) - sizeof(quint32); //(quint64)taille - (quint64)sizeof(typeMessage);
+        //quint64 _taille = in.device()->size();
+        //qDebug() << "CONNEXION] _taille = " << _taille << " et size :" << size;
+        //QByteArray contenuMessage = socket->read(_taille);
+
+        QByteArray contenuMessage;
+        contenuMessage.resize(taille);
+        in.readRawData(contenuMessage.data(), taille);
 
 
         traiterMessage(typeMessage, contenuMessage);
@@ -235,6 +245,7 @@ void Connexion::donneesRecues() {
 
     //this->envoyerMorceau();
         //in.skipRawData(socket->bytesAvailable());
+    }
 }
 
 void Connexion::traiterMessage(quint32 type, QByteArray contenu) {

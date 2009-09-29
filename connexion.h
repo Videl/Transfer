@@ -51,6 +51,7 @@ private:
     QQueue<FichierAEnvoyer *> fichiersAEnvoyer;
 
     int tour;
+   quint32 TAILLE_MAX;
 
 };
 
