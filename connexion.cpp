@@ -360,6 +360,7 @@ void Connexion::traiterMessage(quint32 type, QByteArray contenu) {
         default:
         {
             in.skipRawData(this->tailleMessage - sizeof(this->tailleMessage));
+            qDebug() << "Type inconnu";
         }
     }
 }
